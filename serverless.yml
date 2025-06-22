@@ -1,0 +1,31 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: gabrieloc
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: foodiary-api
+
+provider:
+  name: aws
+  region: sa-east-1
+  runtime: nodejs22.x
+  memorySize: 128
+
+package:
+  individually: true
+
+build:
+  esbuild:
+    minify: true
+    bundle: true
+    sourcemap: false
+    exclude:
+      - "@aws-sdk/"
+    external:
+      - "@aws-sdk/*"
+
+functions:
+  hello:
+    handler: src/main/functions/hello.handler
+    events:
+      - httpApi:
+          path: /hello/{id}
+          method: POST
