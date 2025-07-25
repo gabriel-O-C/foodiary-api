@@ -11,6 +11,10 @@ provider:
 
 package:
   individually: true
+  exclude:
+      - node_modules/husky/**
+      - .husky/**
+      - scripts/husky-*.js
 
 build:
   esbuild:
