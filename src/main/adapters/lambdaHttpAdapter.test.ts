@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
-import type { IController } from "src/application/contracts/Controller";
+import type { Controller } from "src/application/contracts/Controller";
 import { lambdaHttpAdater } from "./lambdaHttpAdapter";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
@@ -13,7 +13,7 @@ vi.mock("../../utils/lambdaBodyParser", () => ({
 
 const mockController = {
   handle: vi.fn(),
-} as unknown as IController<unknown>;
+} as unknown as Controller<unknown>;
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -21,7 +21,7 @@ beforeEach(() => {
 
 describe("lambdaHttpAdapter", () => {
   it("should call controller with parsed body, path params, and query params", async () => {
-    mockController.handle = vi.fn().mockResolvedValueOnce({
+    mockController.execute = vi.fn().mockResolvedValueOnce({
       statusCode: 200,
       body: { message: "ok" },
     });
@@ -35,7 +35,7 @@ describe("lambdaHttpAdapter", () => {
     const handler = lambdaHttpAdater(mockController);
     const result = await handler(event);
 
-    expect(mockController.handle).toHaveBeenCalledWith({
+    expect(mockController.execute).toHaveBeenCalledWith({
       body: { name: "test" },
       params: { id: "123" },
       queryParams: { search: "query" },
@@ -48,7 +48,7 @@ describe("lambdaHttpAdapter", () => {
   });
 
   it("should handle missing optional fields gracefully", async () => {
-    mockController.handle = vi.fn().mockResolvedValueOnce({
+    mockController.execute = vi.fn().mockResolvedValueOnce({
       statusCode: 204,
     });
 
@@ -56,7 +56,7 @@ describe("lambdaHttpAdapter", () => {
     const handler = lambdaHttpAdater(mockController);
     const result = await handler(event);
 
-    expect(mockController.handle).toHaveBeenCalledWith({
+    expect(mockController.execute).toHaveBeenCalledWith({
       body: undefined,
       params: {},
       queryParams: {},
